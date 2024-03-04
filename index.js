@@ -67,6 +67,13 @@ app.get('/book', (req,res) => {
     });
 });
 
+app.get('/book/:bookID', (req,res) => {
+    db.get(`SELECT * FROM books WHERE booksID = ?`, req.params.bookID, (err,rows) => {
+        if (err) res.status(500).send(err);
+        else res.json(rows);
+    });
+});
+
 app.post('/book', (req,res) => {
     const book = req.body;
     db.run(`INSERT INTO books (title,author,price,bookurl,typeID) VALUES (?,?,?,?,?)`, book.title, book.author, book.price, book.bookurl, book.typeID, function(err) {
@@ -79,6 +86,13 @@ app.post('/book', (req,res) => {
 });
 
 // types
+app.get('/type', (req,res) => {
+    db.all(`SELECT * FROM types`, (err,rows) => {
+        if (err) res.status(500).send(err);
+        else res.json(rows);
+    });
+});
+
 app.post('/type', (req,res) => {
     const type = req.body;
     db.run(`INSERT INTO types (typename) VALUES (?)`, type.typename, function(err) {
@@ -87,6 +101,28 @@ app.post('/type', (req,res) => {
             type.typeID = this.lastID;
             res.send(type); 
         }
+    });
+});
+
+// join book - type
+app.get('/magazine/:typeID', (req,res) => {
+    db.all(`SELECT types.*, books.* FROM types JOIN books ON types.typeID = books.typeID WHERE types.typeID = ?`, req.params.typeID, (err,rows) => {
+        if (err) res.status(500).send(err);
+        else res.json(rows);
+    });
+});
+
+app.get('/psychology/:typeID', (req,res) => {
+    db.all(`SELECT types.*, books.* FROM types JOIN books ON types.typeID = books.typeID WHERE types.typeID = ?`, req.params.typeID, (err,rows) => {
+        if (err) res.status(500).send(err);
+        else res.json(rows);
+    });
+});
+
+app.get('/cartoon/:typeID', (req,res) => {
+    db.all(`SELECT types.*, books.* FROM types JOIN books ON types.typeID = books.typeID WHERE types.typeID = ?`, req.params.typeID, (err,rows) => {
+        if (err) res.status(500).send(err);
+        else res.json(rows);
     });
 });
 
